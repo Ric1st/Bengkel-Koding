@@ -3,7 +3,8 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-st.set_page_config(page_title='Prediksi Harga Rumah Depok', page_icon='🏠', layout='wide')
+st.set_page_config(page_title='Bengkod Fast Track',
+                   page_icon='🏘️', layout='wide')
 
 
 @st.cache_resource
@@ -23,10 +24,12 @@ def rupiah(x):
 model, data = muat_model(), muat_data()
 daftar_kecamatan = sorted(data['Kecamatan'].unique())
 
-st.title('🏠 Prediksi Harga Rumah Depok dan Sekitarnya')
-st.caption('Model Random Forest yang dilatih dari ±27 ribu listing properti hasil scraping.')
+st.title('🏘️ Prediki Harga Rumah di Jakarta dan Sekitarnya')
+st.caption(
+    'Model Random Forest 🌳 yang dilatih dari ±27 ribu listing properti hasil scraping.')
 
-tab_prediksi, tab_fitur, tab_visual = st.tabs(['Prediksi', 'Penjelasan Fitur', 'Visualisasi'])
+tab_prediksi, tab_fitur, tab_visual = st.tabs(
+    ['Prediksi', 'Penjelasan Fitur', 'Visualisasi'])
 
 with tab_prediksi:
     with st.form('form_prediksi'):
@@ -34,11 +37,13 @@ with tab_prediksi:
         lt = k1.number_input('Luas Tanah (m²)', 10, 100000, 120, step=5)
         lb = k2.number_input('Luas Bangunan (m²)', 0, 10000, 100, step=5,
                              help='Isi 0 jika berupa kavling (tanah tanpa bangunan).')
-        kec = k3.selectbox('Kecamatan', daftar_kecamatan, index=daftar_kecamatan.index('Cinere'))
+        kec = k3.selectbox('Kecamatan', daftar_kecamatan,
+                           index=daftar_kecamatan.index('Cinere'))
         kirim = st.form_submit_button('Prediksi Harga', type='primary')
 
     if kirim:
-        masukan = pd.DataFrame([{'Luas Tanah': lt, 'Luas Bangunan': lb, 'Kecamatan': kec}])
+        masukan = pd.DataFrame(
+            [{'Luas Tanah': lt, 'Luas Bangunan': lb, 'Kecamatan': kec}])
         prediksi = model.predict(masukan)[0]
         st.session_state['hasil'] = {'lt': lt, 'harga': prediksi}
         median_kec = data.loc[data['Kecamatan'] == kec, 'Harga'].median()
@@ -65,7 +70,8 @@ Jumlah kamar tidur, kamar mandi, dan garasi tidak dipakai. Kamar sangat berkorel
 """)
 
 with tab_visual:
-    median_kec = data.groupby('Kecamatan')['Harga'].median().div(1e9).sort_values().reset_index()
+    median_kec = data.groupby('Kecamatan')['Harga'].median().div(
+        1e9).sort_values().reset_index()
     fig1 = px.bar(median_kec, x='Harga', y='Kecamatan', orientation='h',
                   labels={'Harga': 'Median harga (miliar Rp)'}, title='Median harga per Kecamatan')
     fig1.update_layout(height=700)
